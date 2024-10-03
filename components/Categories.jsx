@@ -27,6 +27,7 @@ const CategoryItem = ({ title, index, isActive, handleChangeCategory }) => {
 const Categories = ({ activeCategory, handleChangeCategory }) => {
 
 
+
     return (
         <FlatList
             horizontal

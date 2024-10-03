@@ -1,11 +1,14 @@
 import { Feather, FontAwesome6, Ionicons } from '@expo/vector-icons';
-import React, { useState, useEffect } from 'react'
-import { Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native'
+import React, { useState, useCallback, useEffect } from 'react'
+import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native'
 import { theme } from "../../constants/theme"
 import { hp, wp } from '../../helpers/common';
 import Categories from '../../components/Categories';
 import { apiCall } from '../../api';
 import ImageGrid from '../../components/ImageGrid';
+
+import { debounce } from "lodash"
+
 const Home = () => {
 
     const [search, setSearch] = useState("")
@@ -13,7 +16,15 @@ const Home = () => {
     const [images, setImages] = useState([])
 
     const handleChangeCategory = (item) => {
-        setActiveCategory(item)
+        setActiveCategory(item);
+        setSearch("");
+
+        setImages([]);
+        let params = {
+            page: 1,
+        }
+        if (item) params.category = item
+        fetchImages(params, false);
 
 
     }
@@ -24,6 +35,8 @@ const Home = () => {
     }, [])
 
     const fetchImages = async (params = { page: 1 }, append = false) => {
+
+
         let res = await apiCall(params);
         if (res.success && res?.data?.hits) {
             if (append)
@@ -35,6 +48,33 @@ const Home = () => {
         }
 
     }
+
+    const handleSearch = (text) => {
+
+
+        setActiveCategory(null);
+
+        if (text.length > 2) {
+            page = 1
+            setImages([])
+
+            fetchImages({ page, q: text }, false)
+        }
+        if (text == "") {
+
+            page = 1
+            setImages([])
+            fetchImages({ page }, false)
+        }
+        setActiveCategory(null)
+    }
+
+    const handleTextDebounce = useCallback(debounce(handleSearch, 400), [handleSearch, fetchImages])
+
+    const handleClearSearch = () => {
+        handleSearch('');
+        setSearch('');
+    };
 
     return (
         <SafeAreaView style={styles.container}>
@@ -58,8 +98,11 @@ const Home = () => {
                     <View style={styles.searchIcon}>
                         <Feather name='search' size={24} color={theme.colors.neutral(0.4)} />
                     </View>
-                    <TextInput value={search} onChangeText={setSearch} placeholder="Search for photos..." style={styles.searchInput}></TextInput>
-                    {search && (<Pressable onPress={() => setSearch("")} style={styles.closeIcon}>
+                    <TextInput value={search} onChangeText={(text) => {
+                        setSearch(text);
+                        handleTextDebounce(text);
+                    }} placeholder="Search for photos..." style={styles.searchInput}></TextInput>
+                    {search && (<Pressable onPress={() => handleClearSearch()} style={styles.closeIcon}>
                         <Ionicons name='close' size={24} color={theme.colors.neutral(0.4)}></Ionicons>
                     </Pressable>)}
                 </View>
@@ -70,7 +113,7 @@ const Home = () => {
 
                 <View style={styles.images}>
 
-                    {images.length > 0 && <ImageGrid images={images} />}
+                    {images?.length > 0 && <ImageGrid images={images} />}
                 </View>
             </ScrollView>
         </SafeAreaView>

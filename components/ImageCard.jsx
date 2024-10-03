@@ -5,6 +5,9 @@ import { getImageSize } from '../helpers/common';
 import { theme } from '../constants/theme';
 
 const ImageCard = ({ item, index, columns }) => {
+    const isLastRow = () => {
+        return (index + 1) % columns === 0;
+    }
 
     const getImageHeight = () => {
         let { imageHeight: height, imageWidth: width } = item;
@@ -14,7 +17,7 @@ const ImageCard = ({ item, index, columns }) => {
     }
 
     return (
-        <Pressable style={styles.imageWrapper}>
+        <Pressable style={[styles.imageWrapper]}>
             <Image
                 transition={100}
 
