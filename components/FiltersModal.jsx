@@ -38,7 +38,7 @@ const FiltersModal = ({ modalRef,
                             let sectionData = data.filters[sectionName]
                             let title = capitalize(sectionName)
                             return (
-                                <View keys={index}>
+                                <View key={index}>
                                     <SectionView title={title}
                                         content={sectionView({
                                             data: sectionData,

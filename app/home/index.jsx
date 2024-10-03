@@ -122,6 +122,24 @@ const Home = () => {
         setSearch('');
     };
 
+    const clearThisFilter = (key) => {
+        let filterz = { ...filters }
+        delete filterz[key]
+
+        setFilters(filterz)
+        page = 1;
+
+        let params = {
+            page,
+            ...filterz
+        }
+        setImages([])
+        if (activeCategory) params.categories = activeCategory
+        if (search) params.q = search
+
+        fetchImages(params, false)
+    }
+
     return (
         <SafeAreaView style={styles.container}>
 
@@ -155,6 +173,49 @@ const Home = () => {
                 <View style={styles.categories}>
                     <Categories activeCategory={activeCategory} handleChangeCategory={handleChangeCategory} />
                 </View>
+
+                {
+                    filters && (
+                        <View>
+                            <ScrollView horizontal showsHorizontalScrollIndicator={false}
+                                contentContainerStyle={styles.filters}>
+                                {
+                                    Object.keys(filters).map((key, index) => {
+                                        return (
+                                            <View key={key}
+                                                style={styles.filterItems}
+                                            >
+                                                {key == 'colors' ? (
+                                                    <View style={{
+                                                        height: 20,
+                                                        width: 30,
+                                                        backgroundColor: filters[key],
+                                                        borderRadius: 7,
+
+
+                                                    }}>
+
+                                                    </View>
+                                                ) : (
+                                                    <Text style={styles.filterItemText}>
+                                                        {filters[key]}
+                                                    </Text>
+                                                )
+                                                }
+                                                <Pressable style={styles.filteredCloseIcon}
+                                                    onPress={() => clearThisFilter(key)}>
+                                                    <Ionicons name='close' size={14} color={theme.colors.neutral(0.9)}></Ionicons>
+
+                                                </Pressable>
+                                            </View>
+                                        )
+                                    })
+                                }
+
+                            </ScrollView>
+                        </View>
+                    )
+                }
 
 
                 <View style={styles.images}>
@@ -221,6 +282,28 @@ const styles = StyleSheet.create({
         borderRadius: theme.radius.sm,
         paddingVertical: 10
     },
+    filters: {
+        paddingHorizontal: wp(4),
+        gap: 10
+
+    },
+    filterItems: {
+        backgroundColor: theme.colors.grayBG,
+        padding: 3,
+        flexDirection: "row",
+        borderRadius: 10,
+        padding: 8,
+        gap: 10,
+        paddingHorizontal: 10,
+    },
+    filterItemText: {
+        fontSize: hp(1.8),
+    },
+    filteredCloseIcon: {
+        backgroundColor: theme.colors.neutral(0.2),
+        padding: 4,
+        borderRadius: 10
+    }
 
 
 })
