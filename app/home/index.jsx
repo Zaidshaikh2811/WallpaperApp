@@ -1,5 +1,5 @@
 import { Feather, FontAwesome6, Ionicons } from '@expo/vector-icons';
-import React, { useState, useCallback, useEffect } from 'react'
+import React, { useState, useCallback, useRef, useEffect } from 'react'
 import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native'
 import { theme } from "../../constants/theme"
 import { hp, wp } from '../../helpers/common';
@@ -8,12 +8,14 @@ import { apiCall } from '../../api';
 import ImageGrid from '../../components/ImageGrid';
 
 import { debounce } from "lodash"
+import FiltersModal from '../../components/FiltersModal';
 
 const Home = () => {
 
     const [search, setSearch] = useState("")
     const [activeCategory, setActiveCategory] = useState(null)
     const [images, setImages] = useState([])
+    const modalRef = useRef(null)
 
     const handleChangeCategory = (item) => {
         setActiveCategory(item);
@@ -69,6 +71,13 @@ const Home = () => {
         setActiveCategory(null)
     }
 
+    const openFilterModal = () => {
+        modalRef?.current?.present();
+    }
+    const closeFilterModal = () => {
+        modalRef?.current?.close();
+    }
+
     const handleTextDebounce = useCallback(debounce(handleSearch, 400), [handleSearch, fetchImages])
 
     const handleClearSearch = () => {
@@ -85,7 +94,7 @@ const Home = () => {
                     <Pressable >
                         <Text style={styles.title}>Header</Text>
                     </Pressable>
-                    <Pressable>
+                    <Pressable onPress={openFilterModal}>
                         <FontAwesome6 name="bars-staggered" size={22} color={
                             theme.colors.neutral(0.7)} />
                     </Pressable>
@@ -116,6 +125,9 @@ const Home = () => {
                     {images?.length > 0 && <ImageGrid images={images} />}
                 </View>
             </ScrollView>
+            <View>
+                <FiltersModal modalRef={modalRef} />
+            </View>
         </SafeAreaView>
     )
 }

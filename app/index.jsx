@@ -12,7 +12,7 @@ const WelcomeScreen = () => {
 
     return (
         <View style={styles.container}>
-            <StatusBar style='light' />
+            <StatusBar style='auto' />
 
             <Image
                 source={require("../assets/welcome.png")}

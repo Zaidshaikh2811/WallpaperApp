@@ -1,26 +1,34 @@
 import { Stack } from 'expo-router'
 import React from 'react'
-import { Text, View } from 'react-native'
-import Home from './home'
+import {
+
+    BottomSheetModalProvider,
+
+} from "@gorhom/bottom-sheet"
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 const Layout = () => {
     return (
+        <GestureHandlerRootView style={{ flex: 1 }}>
+            <BottomSheetModalProvider>
 
-        <Stack >
-            <Stack.Screen name="index"
-                options={{
-                    headerShown: false
-                }}
+                <Stack >
+                    <Stack.Screen name="index"
+                        options={{
+                            headerShown: false
+                        }}
 
-            ></Stack.Screen>
-            <Stack.Screen
-                name="home/index"
-                options={{
-                    headerShown: false
-                }}
+                    ></Stack.Screen>
+                    <Stack.Screen
+                        name="home/index"
+                        options={{
+                            headerShown: false
+                        }}
 
-            />
-        </Stack>
+                    />
+                </Stack>
+            </BottomSheetModalProvider>
+        </GestureHandlerRootView>
     )
 }
 
