@@ -1,6 +1,6 @@
 import { Feather, FontAwesome6, Ionicons } from '@expo/vector-icons';
 import React, { useState, useCallback, useRef, useEffect } from 'react'
-import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native'
+import { ActivityIndicator, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native'
 import { theme } from "../../constants/theme"
 import { hp, wp } from '../../helpers/common';
 import Categories from '../../components/Categories';
@@ -15,8 +15,45 @@ const Home = () => {
     const [search, setSearch] = useState("")
     const [activeCategory, setActiveCategory] = useState(null)
     const [images, setImages] = useState([])
+    const [filters, setFilters] = useState([])
     const modalRef = useRef(null)
 
+
+    const applyFilters = () => {
+
+        if (filters) {
+            page = 1;
+            setImages([])
+            let params = {
+                page,
+                ...filters,
+
+            }
+            if (activeCategory) params.categories = activeCategory
+            if (search) params.q = search
+
+            fetchImages(params, false)
+        }
+        closeFilterModal()
+
+    }
+    const resetFilters = () => {
+        if (filters) {
+            page = 1;
+            setImages([])
+            setFilters(null)
+            let params = {
+                page,
+            }
+            if (activeCategory) params.categories = activeCategory
+            if (search) params.q = search
+
+            fetchImages(params, false)
+        }
+
+        closeFilterModal()
+
+    }
     const handleChangeCategory = (item) => {
         setActiveCategory(item);
         setSearch("");
@@ -60,13 +97,13 @@ const Home = () => {
             page = 1
             setImages([])
 
-            fetchImages({ page, q: text }, false)
+            fetchImages({ page, q: text, ...filters }, false)
         }
         if (text == "") {
 
             page = 1
             setImages([])
-            fetchImages({ page }, false)
+            fetchImages({ page, ...filters }, false)
         }
         setActiveCategory(null)
     }
@@ -124,9 +161,19 @@ const Home = () => {
 
                     {images?.length > 0 && <ImageGrid images={images} />}
                 </View>
+                <View style={{ marginBottom: 70, marginTop: images.length > 0 ? 10 : 70 }}>
+                    <ActivityIndicator size="large" />
+
+                </View>
+
             </ScrollView>
             <View>
-                <FiltersModal modalRef={modalRef} />
+                <FiltersModal modalRef={modalRef} filters={filters}
+                    setFilters={setFilters}
+                    onClose={closeFilterModal}
+                    onApply={applyFilters}
+                    onReset={resetFilters}
+                />
             </View>
         </SafeAreaView>
     )
