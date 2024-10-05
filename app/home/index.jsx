@@ -14,15 +14,19 @@ const Home = () => {
 
     const [search, setSearch] = useState("")
     const [activeCategory, setActiveCategory] = useState(null)
+    const [page, setPage] = useState(1)
     const [images, setImages] = useState([])
     const [filters, setFilters] = useState([])
     const modalRef = useRef(null)
+    const scrollRef = useRef(null)
+
+    const [isEndReached, setIsEndReached] = useState(false)
 
 
     const applyFilters = () => {
 
         if (filters) {
-            page = 1;
+            setPage(1);
             setImages([])
             let params = {
                 page,
@@ -39,7 +43,7 @@ const Home = () => {
     }
     const resetFilters = () => {
         if (filters) {
-            page = 1;
+            setPage(1);
             setImages([])
             setFilters(null)
             let params = {
@@ -57,7 +61,7 @@ const Home = () => {
     const handleChangeCategory = (item) => {
         setActiveCategory(item);
         setSearch("");
-
+        setPage(1);
         setImages([]);
         let params = {
             page: 1,
@@ -140,13 +144,47 @@ const Home = () => {
         fetchImages(params, false)
     }
 
+    const handleScroll = (e) => {
+        const contentHeight = e.nativeEvent.contentSize.height;
+        const scrollViewHeight = e.nativeEvent.layoutMeasurement.height;
+        const scrollOffset = e.nativeEvent.contentOffset.y;
+        const bottomPosition = contentHeight - scrollViewHeight;
+        if (scrollOffset >= bottomPosition) {
+            if (!isEndReached) {
+                setIsEndReached(true)
+
+                setPage(page + 1);
+                let params = {
+                    page,
+                    ...filters
+
+                }
+                if (activeCategory) params.category = activeCategory
+                if (search) params.q = search
+                fetchImages(params, true)
+            }
+
+        }
+        else if (isEndReached) {
+            setIsEndReached(false)
+
+        }
+    }
+    const handleScrollUP = (e) => {
+        scrollRef?.current?.scrollTo({
+            y: 0,
+            animated: true
+        })
+
+    }
+
     return (
         <SafeAreaView style={styles.container}>
 
             <View >
                 <View style={styles.header}>
 
-                    <Pressable >
+                    <Pressable onPress={handleScrollUP} >
                         <Text style={styles.title}>Header</Text>
                     </Pressable>
                     <Pressable onPress={openFilterModal}>
@@ -157,7 +195,9 @@ const Home = () => {
 
             </View>
 
-            <ScrollView contentContainerStyle={{ gap: 15 }}>
+            <ScrollView onScroll={handleScroll} scrollEventThrottle={5}
+                ref={scrollRef}
+                contentContainerStyle={{ gap: 15 }}>
                 <View style={styles.searchBar}>
                     <View style={styles.searchIcon}>
                         <Feather name='search' size={24} color={theme.colors.neutral(0.4)} />
