@@ -78,15 +78,27 @@ const ImageScreen = () => {
     }
 
     const handleDownloadImage = async () => {
-        if (hasPermission === false) {
-            Alert.alert('Permission Denied', 'Media library permission is needed to download the image.');
-            return;
+        // if (hasPermission === false) {
+        //     Alert.alert('Permission Denied', 'Media library permission is needed to download the image.');
+        //     return;
+        // }
+        if (Platform.OS == 'web') {
+            const anchor = document.createElement("a")
+            anchor.href = imageUrl;
+            anchor.target = "_blank"
+            anchor.download = fileName || "download"
+            document.body.appendChild(anchor);
+            anchor.click();
+            document.body.removeChild(anchor);
         }
-        useStatus("downloading")
-        let uri = await downloadFile()
+        else {
+
+            useStatus("downloading")
+            let uri = await downloadFile()
 
 
-        if (uri) showToast("Image Downloaded");
+            if (uri) showToast("Image Downloaded");
+        }
 
     }
     const handleShareImage = async () => {
