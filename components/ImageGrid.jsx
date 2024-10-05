@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native'
 import ImageCard from './ImageCard';
 import { getColoumsCount, wp } from '../helpers/common';
 
-const ImageGrid = ({ images }) => {
+const ImageGrid = ({ images, router }) => {
     const columns = getColoumsCount();
     return (
         <View styles={styles.container}>
@@ -11,7 +11,7 @@ const ImageGrid = ({ images }) => {
                 numColumns={columns}
                 initialNumber={1000}
                 contentContainerStyle={styles.listContainerStyle}
-                renderItem={({ item, index }) => <ImageCard columns={columns} item={item} index={index} />}
+                renderItem={({ item, index }) => <ImageCard router={router} columns={columns} item={item} index={index} />}
                 estimatedItemSize={200}
             ></MasonryFlashList>
         </View>

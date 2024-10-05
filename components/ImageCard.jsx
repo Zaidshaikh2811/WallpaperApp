@@ -4,7 +4,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native'
 import { getImageSize } from '../helpers/common';
 import { theme } from '../constants/theme';
 
-const ImageCard = ({ item, index, columns }) => {
+const ImageCard = ({ item, index, router, columns }) => {
     const isLastRow = () => {
         return (index + 1) % columns === 0;
     }
@@ -17,7 +17,12 @@ const ImageCard = ({ item, index, columns }) => {
     }
 
     return (
-        <Pressable style={[styles.imageWrapper]}>
+        <Pressable onPress={() => {
+            router.push({
+                pathname: "home/image",
+                params: { ...item }
+            })
+        }} style={[styles.imageWrapper]}>
             <Image
                 transition={100}
 

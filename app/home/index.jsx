@@ -9,6 +9,7 @@ import ImageGrid from '../../components/ImageGrid';
 
 import { debounce } from "lodash"
 import FiltersModal from '../../components/FiltersModal';
+import { useRouter } from 'expo-router';
 
 const Home = () => {
 
@@ -19,6 +20,7 @@ const Home = () => {
     const [filters, setFilters] = useState([])
     const modalRef = useRef(null)
     const scrollRef = useRef(null)
+    const router = useRouter()
 
     const [isEndReached, setIsEndReached] = useState(false)
 
@@ -260,7 +262,7 @@ const Home = () => {
 
                 <View style={styles.images}>
 
-                    {images?.length > 0 && <ImageGrid images={images} />}
+                    {images?.length > 0 && <ImageGrid router={router} images={images} />}
                 </View>
                 <View style={{ marginBottom: 70, marginTop: images.length > 0 ? 10 : 70 }}>
                     <ActivityIndicator size="large" />
